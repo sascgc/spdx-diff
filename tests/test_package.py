@@ -21,6 +21,13 @@ def test_new_pkg_with_proprietary(
     exp = ExpectedDiff()
     exp.package_added("example", "0.1")
     exp.package_added("i2c-tools", i2c_tools_version)
+    exp.package_added("libacl1", "2.3.2")
+    exp.package_added("libattr1", "2.5.1")
+    exp.package_added("libpopt0", "1.19")
+    exp.package_added("rsync", "3.2.7")
+    exp.package_removed("libgcc1", "13.4.0")
+    exp.package_removed("libstdc++6", "13.4.0")
+    exp.package_removed("zstd", "1.5.5")
 
     run_spdx_diff_check(
         tmp_dir,
@@ -40,6 +47,13 @@ def test_new_pkg_ign_proprietary(
 ) -> None:
     exp = ExpectedDiff()
     exp.package_added("i2c-tools", i2c_tools_version)
+    exp.package_added("libacl1", "2.3.2")
+    exp.package_added("libattr1", "2.5.1")
+    exp.package_added("libpopt0", "1.19")
+    exp.package_added("rsync", "3.2.7")
+    exp.package_removed("libgcc1", "13.4.0")
+    exp.package_removed("libstdc++6", "13.4.0")
+    exp.package_removed("zstd", "1.5.5")
 
     run_spdx_diff_check(
         tmp_dir,

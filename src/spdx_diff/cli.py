@@ -587,10 +587,15 @@ def main() -> None:
     pkg_diff = compare_dicts(sbom_ref.packages, sbom_new.packages)
     cfg_diff = compare_dicts(sbom_ref.config, sbom_new.config)
     pcfg_diff = compare_packageconfig(sbom_ref.packageconfig, sbom_new.packageconfig)
+    pcfg_light_diff = (
+        {k: v for k, v in pcfg_diff[0].items() if k not in pkg_diff[0]},
+        {k: v for k, v in pcfg_diff[1].items() if k not in pkg_diff[1]},
+        pcfg_diff[2],
+    )
 
     # Print summary or full output
     if args.summary:
-        print_summary(pkg_diff, cfg_diff, pcfg_diff)
+        print_summary(pkg_diff, cfg_diff, pcfg_light_diff)
     elif args.format in {"text", "both"}:
         if show_packages:
             print_diff(
@@ -612,7 +617,7 @@ def main() -> None:
             )
         if show_packageconfig:
             print_packageconfig_diff(
-                *pcfg_diff,
+                *pcfg_light_diff,
                 show_all=args.full,
                 show_added=show_added,
                 show_removed=show_removed,
@@ -620,7 +625,7 @@ def main() -> None:
             )
 
     if args.format in ["json", "both"]:
-        write_diff_to_json(pkg_diff, cfg_diff, pcfg_diff, args.output)
+        write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.output)
 
 
 if __name__ == "__main__":
