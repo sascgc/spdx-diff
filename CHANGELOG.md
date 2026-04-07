@@ -12,6 +12,15 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
+- Refocus the tool on producing complete and reliable spdx diff:
+  - Removing output filtering options:
+      - `--show-added`
+      - `--show-changed`
+      - `--show-removed`
+  - The default behaviour is to show the full spdx diff, follwing arguments are removed:
+      - `--full`
+      - `--summary`
+
 ## [1.0.1] - 2026-02-12
 
 ### Added
