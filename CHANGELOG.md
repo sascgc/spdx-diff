@@ -8,18 +8,25 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The following filtering category arguments have been renamed and converted to
+boolean options, all defaulting to `True`:
+  - `--show-packages` to `--packages`(default) and `--no-packages`
+  - `--show-config` to `--kernel-config`(default) and `--no-kernel-config`
+  - `--show-packageconfig` to `--packageconfig`(default) and `--no-packageconfig`
+  - `--ignore-proprietary` to `--packages-proprietary`(default) and `--no-packages-proprietary`
+
 ### Fixed
 
 ### Removed
 
 - Refocus the tool on producing complete and reliable spdx diff:
   - Removing output filtering options:
-      - `--show-added`
-      - `--show-changed`
-      - `--show-removed`
-  - The default behaviour is to show the full spdx diff, follwing arguments are removed:
-      - `--full`
-      - `--summary`
+    - `--show-added`
+    - `--show-changed`
+    - `--show-removed`
+  - The default behavior is to show the full spdx diff, follwing arguments are removed:
+    - `--full`
+    - `--summary`
 
 ## [1.0.1] - 2026-02-12
 
