@@ -274,7 +274,6 @@ def print_diff(
     added: dict[str, Any],
     removed: dict[str, Any],
     changed: dict[str, Any],
-    *,
 ) -> None:
     """
     Print differences between items.
@@ -305,7 +304,6 @@ def print_packageconfig_diff(
     added: dict[str, dict[str, str]],
     removed: dict[str, dict[str, str]],
     changed: dict[str, dict[str, Any]],
-    *,
 ) -> None:
     """
     Print PACKAGECONFIG differences.
