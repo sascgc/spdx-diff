@@ -275,10 +275,6 @@ def print_diff(
     removed: dict[str, Any],
     changed: dict[str, Any],
     *,
-    show_all: bool = False,
-    show_added: bool = True,
-    show_removed: bool = True,
-    show_changed: bool = True,
 ) -> None:
     """
     Print differences between items.
@@ -288,23 +284,18 @@ def print_diff(
         added: Added items
         removed: Removed items
         changed: Changed items
-        show_all: Whether to show even if empty
-        show_added: Whether to show added items
-        show_removed: Whether to show removed items
-        show_changed: Whether to show changed items
-
     """
-    if show_added and (show_all or added):
+    if added:
         print(f"\n{title} - Added:")
         for k in sorted(added):
             print(f" + {k}" if isinstance(added, list) else f" + {k}: {added[k]}")
 
-    if show_removed and (show_all or removed):
+    if removed:
         print(f"\n{title} - Removed:")
         for k in sorted(removed):
             print(f" - {k}" if isinstance(removed, list) else f" - {k}: {removed[k]}")
 
-    if show_changed and changed and (show_all or changed):
+    if changed:
         print(f"\n{title} - Changed:")
         for k in sorted(changed):
             print(f" ~ {k}: {changed[k]['from']} -> {changed[k]['to']}")
@@ -315,10 +306,6 @@ def print_packageconfig_diff(
     removed: dict[str, dict[str, str]],
     changed: dict[str, dict[str, Any]],
     *,
-    show_all: bool = False,
-    show_added: bool = True,
-    show_removed: bool = True,
-    show_changed: bool = True,
 ) -> None:
     """
     Print PACKAGECONFIG differences.
@@ -327,27 +314,23 @@ def print_packageconfig_diff(
         added: Added packages with their features
         removed: Removed packages with their features
         changed: Changed packages with feature differences
-        show_all: Whether to show even if empty
-        show_added: Whether to show added items
-        show_removed: Whether to show removed items
-        show_changed: Whether to show changed items
 
     """
-    if show_added and (show_all or added):
+    if added:
         print("\nPACKAGECONFIG - Added Packages:")
         for pkg in sorted(added):
             print(f" + {pkg}:")
             for feature, value in sorted(added[pkg].items()):
                 print(f"     {feature}: {value}")
 
-    if show_removed and (show_all or removed):
+    if removed:
         print("\nPACKAGECONFIG - Removed Packages:")
         for pkg in sorted(removed):
             print(f" - {pkg}:")
             for feature, value in sorted(removed[pkg].items()):
                 print(f"     {feature}: {value}")
 
-    if show_changed and (show_all or changed):
+    if changed:
         print("\nPACKAGECONFIG - Changed Packages:")
         for pkg in sorted(changed):
             print(f" ~ {pkg}:")
@@ -361,56 +344,6 @@ def print_packageconfig_diff(
             if pkg_changes.get("changed"):
                 for feature, change in sorted(pkg_changes["changed"].items()):
                     print(f"     ~ {feature}: {change['from']} -> {change['to']}")
-
-
-def print_summary(
-    pkg_diff: tuple[dict[str, Any], dict[str, Any], dict[str, Any]],
-    cfg_diff: tuple[dict[str, Any], dict[str, Any], dict[str, Any]],
-    pcfg_diff: tuple[
-        dict[str, dict[str, str]], dict[str, dict[str, str]], dict[str, dict[str, Any]]
-    ],
-) -> None:
-    """
-    Print summary statistics of differences.
-
-    Args:
-        pkg_diff: Package differences
-        cfg_diff: Kernel config differences
-        pcfg_diff: PACKAGECONFIG differences
-
-    """
-    print("\nSPDX-Diff Summary:\n")
-
-    print("Packages:")
-    print(f"  Added:   {len(pkg_diff[0])}")
-    print(f"  Removed: {len(pkg_diff[1])}")
-    print(f"  Changed: {len(pkg_diff[2])}")
-
-    print("\nKernel Config:")
-    print(f"  Added:   {len(cfg_diff[0])}")
-    print(f"  Removed: {len(cfg_diff[1])}")
-    print(f"  Changed: {len(cfg_diff[2])}")
-
-    print("\nPACKAGECONFIG:")
-    print(f"  Packages Added:   {len(pcfg_diff[0])}")
-    print(f"  Packages Removed: {len(pcfg_diff[1])}")
-    print(f"  Packages Changed: {len(pcfg_diff[2])}")
-
-    # Count total feature changes
-    total_features_added = sum(len(v.get("added", {})) for v in pcfg_diff[2].values())
-    total_features_removed = sum(
-        len(v.get("removed", {})) for v in pcfg_diff[2].values()
-    )
-    total_features_changed = sum(
-        len(v.get("changed", {})) for v in pcfg_diff[2].values()
-    )
-
-    if total_features_added or total_features_removed or total_features_changed:
-        print(f"  Features Added:   {total_features_added}")
-        print(f"  Features Removed: {total_features_removed}")
-        print(f"  Features Changed: {total_features_changed}")
-
-    print()
 
 
 def write_diff_to_json(
@@ -487,11 +420,6 @@ def main() -> None:
         type=path_is_file,
         help="New SPDX3 JSON file",
     )
-    parser.add_argument(
-        "--full",
-        action="store_true",
-        help="For console output, always show section names (added, removed, changed)",
-    )
     timestamp = datetime.now(tz=timezone.utc).astimezone().strftime("%Y%m%d-%H%M%S")
     default_output = f"spdx_diff_{timestamp}.json"
     parser.add_argument(
@@ -508,11 +436,6 @@ def main() -> None:
         help="Ignore packages with LicenseRef-Proprietary",
     )
     parser.add_argument(
-        "--summary",
-        action="store_true",
-        help="Show only summary statistics without detailed differences",
-    )
-    parser.add_argument(
         "--format",
         choices=["text", "json", "both"],
         default="both",
@@ -520,21 +443,6 @@ def main() -> None:
     )
 
     # Output filtering options
-    parser.add_argument(
-        "--show-added",
-        action="store_true",
-        help="Show only added items",
-    )
-    parser.add_argument(
-        "--show-removed",
-        action="store_true",
-        help="Show only removed items",
-    )
-    parser.add_argument(
-        "--show-changed",
-        action="store_true",
-        help="Show only changed items",
-    )
     parser.add_argument(
         "--show-packages",
         action="store_true",
@@ -563,11 +471,6 @@ def main() -> None:
 
     # Determine what to show based on flags
     # If no specific show flags are set, show everything
-    show_all_change = not (args.show_added or args.show_removed or args.show_changed)
-    show_added = args.show_added or show_all_change
-    show_removed = args.show_removed or show_all_change
-    show_changed = args.show_changed or show_all_change
-
     show_all_category = not (
         args.show_packages or args.show_config or args.show_packageconfig
     )
@@ -594,35 +497,20 @@ def main() -> None:
     )
 
     # Print summary or full output
-    if args.summary:
-        print_summary(pkg_diff, cfg_diff, pcfg_light_diff)
-    elif args.format in {"text", "both"}:
-        if show_packages:
-            print_diff(
-                "Packages",
-                *pkg_diff,
-                show_all=args.full,
-                show_added=show_added,
-                show_removed=show_removed,
-                show_changed=show_changed,
-            )
-        if show_config:
-            print_diff(
-                "Kernel Config",
-                *cfg_diff,
-                show_all=args.full,
-                show_added=show_added,
-                show_removed=show_removed,
-                show_changed=show_changed,
-            )
-        if show_packageconfig:
-            print_packageconfig_diff(
-                *pcfg_light_diff,
-                show_all=args.full,
-                show_added=show_added,
-                show_removed=show_removed,
-                show_changed=show_changed,
-            )
+    if show_packages:
+        print_diff(
+            "Packages",
+            *pkg_diff,
+        )
+    if show_config:
+        print_diff(
+            "Kernel Config",
+            *cfg_diff,
+        )
+    if show_packageconfig:
+        print_packageconfig_diff(
+            *pcfg_light_diff,
+        )
 
     if args.format in ["json", "both"]:
         write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.output)
