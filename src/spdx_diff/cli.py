@@ -5,7 +5,7 @@ import json
 import logging
 import pathlib
 import re
-from argparse import ArgumentParser, ArgumentTypeError
+from argparse import ArgumentParser, ArgumentTypeError, BooleanOptionalAction
 from collections import defaultdict
 from datetime import datetime, timezone
 from typing import Any
@@ -429,32 +429,37 @@ def main() -> None:
         help="Optional output file name (JSON)",
     )
     parser.add_argument(
-        "--ignore-proprietary",
-        action="store_true",
-        help="Ignore packages with LicenseRef-Proprietary",
-    )
-    parser.add_argument(
         "--format",
         choices=["text", "json", "both"],
         default="both",
         help="Output format: text (console only), json (file only), or both (default)",
     )
 
-    # Output filtering options
-    parser.add_argument(
-        "--show-packages",
-        action="store_true",
-        help="Show only package differences",
+    # Output filtering category options
+    text_output_group = parser.add_argument_group("for text output")
+    text_output_group.add_argument(
+        "--kernel-config",
+        action=BooleanOptionalAction,
+        default=True,
+        help="show|hide kernel config differences (default: yes)",
     )
-    parser.add_argument(
-        "--show-config",
-        action="store_true",
-        help="Show only kernel config differences",
+    text_output_group.add_argument(
+        "--packageconfig",
+        action=BooleanOptionalAction,
+        default=True,
+        help="show|hide PACKAGECONFIG differences",
     )
-    parser.add_argument(
-        "--show-packageconfig",
-        action="store_true",
-        help="Show only PACKAGECONFIG differences",
+    text_output_group.add_argument(
+        "--packages",
+        action=BooleanOptionalAction,
+        default=True,
+        help="show|hide package differences (default: yes)",
+    )
+    text_output_group.add_argument(
+        "--packages-proprietary",
+        action=BooleanOptionalAction,
+        default=True,
+        help="show|hide packages with LicenseRef-Proprietary (default: yes)",
     )
 
     args = parser.parse_args()
@@ -469,12 +474,10 @@ def main() -> None:
 
     # Determine what to show based on flags
     # If no specific show flags are set, show everything
-    show_all_category = not (
-        args.show_packages or args.show_config or args.show_packageconfig
-    )
-    show_packages = args.show_packages or show_all_category
-    show_config = args.show_config or show_all_category
-    show_packageconfig = args.show_packageconfig or show_all_category
+
+    show_packages = args.packages
+    show_kernel_config = args.kernel_config
+    show_packageconfig = args.packageconfig
 
     try:
         sbom_ref = Spdx3Sbom(args.reference)
