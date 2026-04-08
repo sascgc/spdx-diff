@@ -61,7 +61,7 @@ def test_new_pkg_ign_proprietary(
         "reference-sbom.spdx.json",
         sbom_new_name,
         exp,
-        ["--ignore-proprietary"],
+        ["--no-packages-proprietary"],
     )
 
 

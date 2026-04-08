@@ -145,5 +145,5 @@ def run_spdx_diff_check(
             sbom_ref,
             sbom_new,
             exp_diff,
-            ["--ignore-proprietary", *extra_args],
+            ["--no-packages-proprietary", *extra_args],
         )
