@@ -21,21 +21,13 @@ Required arguments:
   - `new`: Path to the newer SPDX3 JSON file.
 
 Optional arguments:
-  - `--full`: For console output, always show section names (added, removed,
-    changed) even if there is no difference.
   - `--output <file>`: Save diff results to the given JSON file.
     Default: `spdx_diff_<timestamp>.json`
   - `--ignore-proprietary`: Ignore packages with LicenseRef-Proprietary.
-  - `--summary`: Show only summary statistics without detailed differences.
   - `--format {text,json,both}`: Control output format:
     - `text`: Console output only (no JSON file)
     - `json`: JSON file only (silent mode for automation)
     - `both`: Both console and JSON output (**default**)
-
-Output filtering - change type:
-  - `--show-added`: Show only added items.
-  - `--show-removed`: Show only removed items.
-  - `--show-changed`: Show only changed items.
 
 Output filtering - category:
   - `--show-packages`: Show only package differences.
@@ -67,27 +59,6 @@ Symbols:
   - removed
   ~ changed
 
-Summary Mode
-------------
-When using --summary, the tool displays aggregate statistics:
-
-```
-SPDX-Diff Summary:
-
-Packages:
-  Added:   5
-  Removed: 2
-  Changed: 3
-
-Kernel Config:
-  Added:   10
-  Removed: 3
-  Changed: 7
-
-PACKAGECONFIG:
-  Features Added:   12
-  Features Removed: 4
-  Features Changed: 6
 ```
 
 JSON Diff File
@@ -161,28 +132,14 @@ Examples
     ./spdx-diff reference.json new.json
 
 ### Full details with proprietary packages excluded:
-    ./spdx-diff reference.json new.json --ignore-proprietary --full
+    ./spdx-diff reference.json new.json --ignore-proprietary
 
-### Quick summary check:
-    ./spdx-diff reference.json new.json --summary
 
 ### Silent mode for CI/CD (JSON output only):
     ./spdx-diff reference.json new.json --format json --output results.json
 
 ### Console output only (no JSON file):
-    ./spdx-diff reference.json new.json --format text --full
-
-### Show only changed packages:
-    ./spdx-diff reference.json new.json --show-packages --show-changed
-
-### Show only added packages:
-    ./spdx-diff reference.json new.json --show-packages --show-added
-
-### Show only kernel config changes:
-    ./spdx-diff reference.json new.json --show-config --show-changed
-
-### Show added and changed items across all categories:
-    ./spdx-diff reference.json new.json --show-added --show-changed
+    ./spdx-diff reference.json new.json --format text
 
 ### Show only PACKAGECONFIG differences:
     ./spdx-diff reference.json new.json --show-packageconfig

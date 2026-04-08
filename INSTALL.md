@@ -49,9 +49,6 @@ spdx-diff --help
 # Compare two SPDX files
 spdx-diff reference.json new.json
 
-# Show summary only
-spdx-diff reference.json new.json --summary
-
 # JSON output for automation
 spdx-diff reference.json new.json --format json --output results.json
 ```
