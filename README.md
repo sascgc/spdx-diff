@@ -8,7 +8,11 @@ This tool compares two SPDX3 JSON documents and reports differences in:
 - Kernel configuration parameters (CONFIG_*)
 - PACKAGECONFIG entries per package
 
-It produces both human-readable output (console) and a structured JSON diff file.
+The application separates human-readable and machine-readable outputs to improve automation and pipeline integration.
+
+- **stderr** is used for human-readable (text) output intended for debugging.
+- **stdout** always emits structured **JSON output**, making it suitable for consumption by scripts and CI/CD pipelines.
+- When a JSON filename parameter is provided, the JSON result is also written to the specified file.
 
 Usage
 -----
@@ -21,12 +25,7 @@ Required arguments:
   - `new`: Path to the newer SPDX3 JSON file.
 
 Optional arguments:
-  - `--output <file>`: Save diff results to the given JSON file.
-    Default: `spdx_diff_<timestamp>.json`
-  - `--format {text,json,both}`: Control output format:
-    - `text`: Console output only (no JSON file)
-    - `json`: JSON file only (silent mode for automation)
-    - `both`: Both console and JSON output (**default**)
+  - `--json-output <file>`: Save diff results to the given JSON file.
 
 Text output filtering - category :
   - `--[no-]packages`: show|hide package differences.
@@ -128,22 +127,22 @@ The script uses Python's logging module:
 Examples
 --------
 
-### Basic comparison with both console and JSON output:
+### Basic comparison with both console(stderr) and JSON(stdout) output:
     ./spdx-diff reference.json new.json
 
 ### Full details with proprietary packages excluded:
     ./spdx-diff reference.json new.json --no-packages-proprietary
 
-### Silent mode for CI/CD (JSON output only):
-    ./spdx-diff reference.json new.json --format json --output results.json
+### Console output for CI/CD:
+    ./spdx-diff reference.json new.json --quiet
 
-### Console output only (no JSON file):
-    ./spdx-diff reference.json new.json --format text
+### Console and JSON output with JSON file generated:
+    ./spdx-diff reference.json new.json --quiet --json-output result.json
 
 ### Show on console no PACKAGECONFIG differences:
     ./spdx-diff reference.json new.json --no-packageconfig
 
-Console output example:
+Console output(stderr) example:
 ```
 Packages - Added:
  + libfoo: 2.0
