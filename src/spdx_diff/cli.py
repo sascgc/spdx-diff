@@ -413,6 +413,12 @@ def main() -> None:
         help="Increase verbosity (-v for INFO, -vv for DEBUG)",
     )
     parser.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="",
+    )
+    parser.add_argument(
         "reference",
         type=path_is_file,
         help="Reference SPDX3 JSON file",
@@ -469,7 +475,9 @@ def main() -> None:
     args = parser.parse_args()
 
     log_level = logging.WARNING
-    if args.verbose >= 2:
+    if args.quiet:
+        log_level = logging.ERROR
+    elif args.verbose >= 2:
         log_level = logging.DEBUG
     elif args.verbose == 1:
         log_level = logging.INFO
