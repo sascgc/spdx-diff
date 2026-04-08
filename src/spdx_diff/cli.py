@@ -5,8 +5,10 @@ import json
 import logging
 import pathlib
 import re
+import sys
 from argparse import ArgumentParser, ArgumentTypeError, BooleanOptionalAction
 from collections import defaultdict
+from contextlib import redirect_stdout
 from datetime import datetime, timezone
 from typing import Any
 
@@ -509,24 +511,26 @@ def main() -> None:
         pcfg_diff[2],
     )
 
-    # Print summary or full output
-    if show_packages:
-        print_diff(
-            "Packages",
-            *pkg_diff,
-        )
-    if show_kernel_config:
-        print_diff(
-            "Kernel Config",
-            *cfg_diff,
-        )
-    if show_packageconfig:
-        print_packageconfig_diff(
-            *pcfg_light_diff,
-        )
-
     if args.format in ["json", "both"]:
         write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.output)
+    # Print human readable information on stderr
+    with redirect_stdout(sys.stderr):
+        if show_packages:
+            print_diff(
+                "Packages",
+                *pkg_diff,
+            )
+        if show_kernel_config:
+            print_diff(
+                "Kernel Config",
+                *cfg_diff,
+            )
+        if show_packageconfig:
+            print_packageconfig_diff(
+                *pcfg_light_diff,
+            )
+
+
 
 
 if __name__ == "__main__":
