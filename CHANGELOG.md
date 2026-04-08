@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The following filtering category arguments have been renamed and converted to
+boolean options, all defaulting to `True`:
+  - `--show-packages` to `--packages`(default) and `--no-packages`
+  - `--show-config` to `--kernel-config`(default) and `--no-kernel-config`
+  - `--show-packageconfig` to `--packageconfig`(default) and `--no-packageconfig`
+  - `--ignore-proprietary` to `--packages-proprietary`(default) and `--no-packages-proprietary`
+
 ### Fixed
 
 ### Removed
