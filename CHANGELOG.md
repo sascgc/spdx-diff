@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Added quiet argument for decreasing verbosity to ERROR only.
 
 ### Changed
-
 - The following filtering category arguments have been renamed and converted to
 boolean options, all defaulting to `True`:
   - `--show-packages` to `--packages`(default) and `--no-packages`
