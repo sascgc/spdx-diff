@@ -102,9 +102,7 @@ def _run_spdx_diff_check(
         [
             os.fspath(sbom_data_path.joinpath(sbom_ref).resolve(strict=True)),
             os.fspath(sbom_data_path.joinpath(sbom_new).resolve(strict=True)),
-            "--format",
-            "json",
-            "--output",
+            "--json-output",
             os.fspath(out_path),
             *extra_args,
         ],
