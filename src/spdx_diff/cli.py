@@ -5,6 +5,7 @@ import json
 import logging
 import pathlib
 import re
+import sys
 from argparse import (
     Action,
     ArgumentParser,
@@ -471,6 +472,12 @@ def main() -> None:
         default="both",
         help="Output format: text (console only), json (file only), or both (default)",
     )
+    parser.add_argument(
+        "-H",
+        "--human-readable",
+        action="store_true",
+        help="Output results in a human-readable text format",
+    )
 
     # Output filtering category options
     text_output_group = parser.add_argument_group("for text output")
@@ -515,6 +522,7 @@ def main() -> None:
     show_packages = args.packages
     show_kernel_config = args.kernel_config
     show_packageconfig = args.packageconfig
+    human_readable_output = args.human_readable
 
     try:
         sbom_ref = Spdx3Sbom(args.reference)
@@ -534,25 +542,24 @@ def main() -> None:
         pcfg_diff[2],
     )
 
-    # Print summary or full output
-    if show_packages:
-        print_diff(
-            "Packages",
-            *pkg_diff,
-        )
-    if show_kernel_config:
-        print_diff(
-            "Kernel Config",
-            *cfg_diff,
-        )
-    if show_packageconfig:
-        print_packageconfig_diff(
-            *pcfg_light_diff,
-        )
-
-    if args.format in ["json", "both"]:
-        write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.output)
-
+    # Print human readable information if --human-readable is set
+    if human_readable_output:
+        if show_packages:
+            print_diff(
+                "Packages",
+                *pkg_diff,
+            )
+        if show_kernel_config:
+            print_diff(
+                "Kernel Config",
+                *cfg_diff,
+            )
+        if show_packageconfig:
+            print_packageconfig_diff(
+                *pcfg_light_diff,
+            )
+    else:
+        write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.json_output)
 
 if __name__ == "__main__":
     main()
