@@ -9,7 +9,6 @@ import sys
 from argparse import ArgumentParser, ArgumentTypeError, BooleanOptionalAction
 from collections import defaultdict
 from contextlib import redirect_stdout
-from datetime import datetime, timezone
 from typing import Any
 
 from . import __version__
@@ -386,8 +385,15 @@ def write_diff_to_json(
             "changed": dict(sorted(pcfg_diff[2].items())),
         },
     }
-    with output_file.open("w", encoding="utf-8") as f:
-        json.dump(delta, f, indent=2, ensure_ascii=False)
+    # Write the resulting SPDX diff JSON to stdout for piping
+    json.dump(delta, sys.stdout, indent=2, ensure_ascii=False)
+    sys.stdout.write("\n")
+
+    # Write the resulting SPDX diff JSON to file
+    if output_file is not None:
+        _logger.info("Writing diff results to %s", output_file)
+        with output_file.open("w", encoding="utf-8") as f:
+            json.dump(delta, f, indent=2, ensure_ascii=False)
 
 
 def path_is_file(value: str) -> pathlib.Path:
@@ -430,21 +436,13 @@ def main() -> None:
         type=path_is_file,
         help="New SPDX3 JSON file",
     )
-    timestamp = datetime.now(tz=timezone.utc).astimezone().strftime("%Y%m%d-%H%M%S")
-    default_output = f"spdx_diff_{timestamp}.json"
     parser.add_argument(
-        "--output",
+        "--json-output",
         "-o",
         metavar="PATH",
         type=pathlib.Path,
-        default=default_output,
-        help="Optional output file name (JSON)",
-    )
-    parser.add_argument(
-        "--format",
-        choices=["text", "json", "both"],
-        default="both",
-        help="Output format: text (console only), json (file only), or both (default)",
+        default=None,
+        help="JSON Output file name (default: none)",
     )
 
     # Output filtering category options
@@ -511,8 +509,6 @@ def main() -> None:
         pcfg_diff[2],
     )
 
-    if args.format in ["json", "both"]:
-        write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.output)
     # Print human readable information on stderr
     with redirect_stdout(sys.stderr):
         if show_packages:
@@ -531,6 +527,7 @@ def main() -> None:
             )
 
 
+    write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.json_output)
 
 
 if __name__ == "__main__":
