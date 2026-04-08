@@ -23,16 +23,16 @@ Required arguments:
 Optional arguments:
   - `--output <file>`: Save diff results to the given JSON file.
     Default: `spdx_diff_<timestamp>.json`
-  - `--ignore-proprietary`: Ignore packages with LicenseRef-Proprietary.
   - `--format {text,json,both}`: Control output format:
     - `text`: Console output only (no JSON file)
     - `json`: JSON file only (silent mode for automation)
     - `both`: Both console and JSON output (**default**)
 
-Output filtering - category:
-  - `--show-packages`: Show only package differences.
-  - `--show-config`: Show only kernel config differences.
-  - `--show-packageconfig`: Show only PACKAGECONFIG differences.
+Text output filtering - category :
+  - `--[no-]packages`: show|hide package differences.
+  - `--[no-]kernel-config`: show|hide kernel config differences.
+  - `--[no-]packageconfig`: show|hide PACKAGECONFIG differences.
+  - `--[no-]packages-proprietary`: show|hide packages with LicenseRef-Proprietary.
 
 Output
 ------
@@ -132,8 +132,7 @@ Examples
     ./spdx-diff reference.json new.json
 
 ### Full details with proprietary packages excluded:
-    ./spdx-diff reference.json new.json --ignore-proprietary
-
+    ./spdx-diff reference.json new.json --no-packages-proprietary
 
 ### Silent mode for CI/CD (JSON output only):
     ./spdx-diff reference.json new.json --format json --output results.json
@@ -141,8 +140,8 @@ Examples
 ### Console output only (no JSON file):
     ./spdx-diff reference.json new.json --format text
 
-### Show only PACKAGECONFIG differences:
-    ./spdx-diff reference.json new.json --show-packageconfig
+### Show on console no PACKAGECONFIG differences:
+    ./spdx-diff reference.json new.json --no-packageconfig
 
 Console output example:
 ```
