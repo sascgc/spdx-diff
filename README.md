@@ -8,7 +8,11 @@ This tool compares two SPDX3 JSON documents and reports differences in:
 - Kernel configuration parameters (CONFIG_*)
 - PACKAGECONFIG entries per package
 
-It produces both human-readable output (console) and a structured JSON diff file.
+The application separates human-readable and machine-readable outputs to improve automation and pipeline integration.
+
+- By default, the tool emits structured **JSON output**, making it suitable for consumption by scripts and CI/CD pipelines.
+- The default output format can be changed into a human-readable (text) using --human-readable optional argument.
+- When a JSON filename parameter is provided, the JSON result is also written to the specified file.
 
 Usage
 -----
@@ -21,12 +25,8 @@ Required arguments:
   - `new`: Path to the newer SPDX3 JSON file.
 
 Optional arguments:
-  - `--output <file>`: Save diff results to the given JSON file.
-    Default: `spdx_diff_<timestamp>.json`
-  - `--format {text,json,both}`: Control output format:
-    - `text`: Console output only (no JSON file)
-    - `json`: JSON file only (silent mode for automation)
-    - `both`: Both console and JSON output (**default**)
+  - `--json-output <file>`: Save diff results to the given JSON file.
+  - `--human-readable`: Output results in a human-readable text format.
 
 Text output filtering - category :
   - `--[no-]packages`: show|hide package differences.
@@ -128,22 +128,25 @@ The script uses Python's logging module:
 Examples
 --------
 
-### Basic comparison with both console and JSON output:
+### Basic comparison with default JSON output on stdout:
     ./spdx-diff reference.json new.json
 
 ### Full details with proprietary packages excluded:
     ./spdx-diff reference.json new.json --no-packages-proprietary
 
-### Silent mode for CI/CD (JSON output only):
-    ./spdx-diff reference.json new.json --format json --output results.json
+### Console output for CI/CD:
+    ./spdx-diff reference.json new.json
 
-### Console output only (no JSON file):
-    ./spdx-diff reference.json new.json --format text
+### Console output human-readable:
+    ./spdx-diff reference.json new.json --human-readable
+
+### Console and JSON output with JSON file generated:
+    ./spdx-diff reference.json new.json --json-output result.json
 
 ### Exclude on console PACKAGECONFIG differences:
     ./spdx-diff reference.json new.json --no-packageconfig
 
-Console output example:
+Human readable console output example:
 ```
 Packages - Added:
  + libfoo: 2.0

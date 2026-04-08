@@ -46,11 +46,14 @@ After installation:
 # Show help
 spdx-diff --help
 
-# Compare two SPDX files
+# Compare two SPDX files, JSON output on stdout by default
 spdx-diff reference.json new.json
 
-# JSON output for automation
-spdx-diff reference.json new.json --format json --output results.json
+# Compare two SPDX files, human readable output on stdout
+spdx-diff reference.json new.json --human-readable
+
+# With JSON file output generated
+spdx-diff reference.json new.json --json-output results.json
 ```
 
 See `README.md` for full documentation.
