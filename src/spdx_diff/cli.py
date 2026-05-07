@@ -477,6 +477,12 @@ formatter_class=CustomBooleanOptionalActionFormatter)
         default=None,
         help="JSON Output file name (default: none)",
     )
+    parser.add_argument(
+        "-H",
+        "--human-readable",
+        action="store_true",
+        help="Output results in a human-readable text format",
+    )
 
     # Output filtering category options
     text_output_group = parser.add_argument_group("for text output")
@@ -523,6 +529,7 @@ formatter_class=CustomBooleanOptionalActionFormatter)
     show_packages = args.packages
     show_kernel_config = args.kernel_config
     show_packageconfig = args.packageconfig
+    human_readable_output = args.human_readable
 
     try:
         sbom_ref = Spdx3Sbom(args.reference)
@@ -542,25 +549,26 @@ formatter_class=CustomBooleanOptionalActionFormatter)
         pcfg_diff[2],
     )
 
+
     # Print human readable information on stderr
-    with redirect_stdout(sys.stderr):
-        if show_packages:
-            print_diff(
-                "Packages",
-                *pkg_diff,
-            )
-        if show_kernel_config:
-            print_diff(
-                "Kernel Config",
-                *cfg_diff,
-            )
-        if show_packageconfig:
-            print_packageconfig_diff(
-                *pcfg_light_diff,
-            )
-
-
-    write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.json_output)
+    if human_readable_output:
+        with redirect_stdout(sys.stderr):
+            if show_packages:
+                print_diff(
+                    "Packages",
+                    *pkg_diff,
+                )
+            if show_kernel_config:
+                print_diff(
+                    "Kernel Config",
+                    *cfg_diff,
+                )
+            if show_packageconfig:
+                print_packageconfig_diff(
+                    *pcfg_light_diff,
+                )
+    else:
+        write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.json_output)
 
 
 if __name__ == "__main__":
