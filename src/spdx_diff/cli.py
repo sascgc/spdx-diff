@@ -8,7 +8,6 @@ import re
 import sys
 from argparse import ArgumentParser, ArgumentTypeError, BooleanOptionalAction
 from collections import defaultdict
-from contextlib import redirect_stdout
 from typing import Any
 
 from . import __version__
@@ -444,6 +443,15 @@ def main() -> None:
         default=None,
         help="JSON Output file name (default: none)",
     )
+    parser.add_argument(
+        "-H",
+        "--human-readable",
+        action="store_true",
+        help=(
+            "Display differences in a human-readable text format"
+            "instead of the default JSON output."
+        ),
+    )
 
     # Output filtering category options
     text_output_group = parser.add_argument_group("for text output")
@@ -490,6 +498,7 @@ def main() -> None:
     show_packages = args.packages
     show_kernel_config = args.kernel_config
     show_packageconfig = args.packageconfig
+    human_readable_output = args.human_readable
 
     try:
         sbom_ref = Spdx3Sbom(args.reference)
@@ -510,7 +519,7 @@ def main() -> None:
     )
 
     # Print human readable information on stderr
-    with redirect_stdout(sys.stderr):
+    if human_readable_output:
         if show_packages:
             print_diff(
                 "Packages",
@@ -526,8 +535,8 @@ def main() -> None:
                 *pcfg_light_diff,
             )
 
-
-    write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.json_output)
+    else:
+        write_diff_to_json(pkg_diff, cfg_diff, pcfg_light_diff, args.json_output)
 
 
 if __name__ == "__main__":
