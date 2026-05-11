@@ -470,8 +470,8 @@ formatter_class=CustomBooleanOptionalActionFormatter)
         help="New SPDX3 JSON file",
     )
     parser.add_argument(
+        "-j",
         "--json-output",
-        "-o",
         metavar="PATH",
         type=pathlib.Path,
         default=None,
