@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+ - Support zstd-compressed SPDX files.
+
 ### Changed
 
 - Add custom `HelpFormatter` to render boolean flags in a compact `--[no-]flag` format instead of the default `--flag, --no-flag`.
