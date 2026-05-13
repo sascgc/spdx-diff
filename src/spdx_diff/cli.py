@@ -16,6 +16,11 @@ from argparse import (
 from collections import defaultdict
 from typing import Any
 
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
+
 from . import __version__
 
 _logger = logging.getLogger(__name__)
@@ -53,9 +58,14 @@ class Spdx3Sbom:
         :param json_path: Path the JSON file.
         """
         _logger.info("Opening SPDX file: %s", json_path)
+
         try:
-            with json_path.open(encoding="utf-8") as f:
-                data = json.load(f)
+            if json_path.suffix == ".zst":
+                with zstd.open(json_path, "rt") as f:
+                    data = json.load(f)
+            else:
+                with json_path.open(encoding="utf-8") as f:
+                    data = json.load(f)
         except (OSError, ValueError) as e:
             raise ValueError("Failed to read or parse %s", json_path) from e
 
