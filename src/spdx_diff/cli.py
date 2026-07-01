@@ -17,9 +17,12 @@ from collections import defaultdict
 from typing import Any
 
 if sys.version_info >= (3, 14):
-    from compression import zstd
+    from compression.zstd import open as open_zstd
 else:
-    from backports import zstd
+    try:
+        from zstandard import open as open_zstd
+    except ImportError:
+        open_zstd = None
 
 from . import __version__
 
@@ -61,7 +64,12 @@ class Spdx3Sbom:
 
         try:
             if json_path.suffix == ".zst":
-                with zstd.open(json_path, "rt") as f:
+                if open_zstd is None:
+                    raise RuntimeError(
+                        "Zstd support is not available."
+                        "Please install the 'zstandard' package."
+                    )
+                with open_zstd(json_path, "rb") as f:
                     data = json.load(f)
             else:
                 with json_path.open(encoding="utf-8") as f:
